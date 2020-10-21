@@ -60,8 +60,8 @@ def double_sha256(m):
 
 #T is the list of digest of all transaction in the block
 #n is the len of T
-#return the merkel root (size 32) of transaction list T
-def merkel_root_generation(T, n):
+#return the merkle root (size 32) of transaction list T
+def merkle_root_generation(T, n):
   if n == 0:
     return None
   elif n == 1:
@@ -71,4 +71,4 @@ def merkel_root_generation(T, n):
       T.append(b'')
     T = [double_sha256(i+j) for i, j in zip(T[::2], T[1::2])]
     n = int(n/2)+n%2
-    return merkel_root_generation (T, n)
+    return merkle_root_generation (T, n)
