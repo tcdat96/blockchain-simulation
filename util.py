@@ -14,13 +14,21 @@ def f2b (n):
 def b2f (n):
   return int.from_bytes(n, 'big')/(10**12)
 
+# from string to bytearray
+def i2b(n):
+  return n.to_bytes(32, 'big')
+
+# from bytearray to string
+def b2i(n):
+  return int.from_bytes(n, 'big')
+
 #from private key (int) to bytearray
 def pr2b (n):
-  return n.to_bytes(32, 'big')
+  return i2b(n)
 
 #from bytearray to private key (int)
 def b2pr (n):
-  return int.from_bytes(n, 'big')
+  return b2i(n)
 
 #from public key (int, int) to bytearray
 def pu2b (n):
@@ -29,6 +37,14 @@ def pu2b (n):
 #from bytearray to public key (int, int)
 def b2pu (n):
   return int.from_bytes (n[:32], 'big'), int.from_bytes (n[32:], 'big')
+
+# from string to bytearray
+def str2b(string):
+  return string.decode('utf-8')
+
+# from bytearray to string
+def b2str(string):
+  return string.decode('utf-8')
 
 #generate a key pair private key (int) and public key (int, int)
 def generate_keypair():
