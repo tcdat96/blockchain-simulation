@@ -1,58 +1,48 @@
+
 '''
 util.py 
 tools to modified the key and data format
 '''
 
-from fastecdsa import curve, keys
-from hashlib import sha256
+from struct import *
+from base64 import b64encode, b64decode
 
-#from float to bytearray, max of 12 digits after floating point
+#from double to bytes (len: 8 bytes)
 def f2b (n):
-  return int(n * 10**12).to_bytes(16, 'big')
+  return pack('>d', n)
 
-#from bytearray to float
+#from bytes to double (len of input bytes: 8)
 def b2f (n):
-  return int.from_bytes(n, 'big')/(10**12)
+  return unpack('>d', n)
 
-#from private key (int) to bytearray
-def pr2b (n):
+#from int to bytes (len: 32)
+def i2b (n):
   return n.to_bytes(32, 'big')
 
-#from bytearray to private key (int)
-def b2pr (n):
+#from bytes to int
+def b2i (n):
   return int.from_bytes(n, 'big')
 
-#from public key (int, int) to bytearray
-def pu2b (n):
-  return n[0].to_bytes(32, 'big') + n[1].to_bytes(32, 'big')
+#from int to base64
+def i2a (n):
+  return b64encode(i2b(n))
 
-#from bytearray to public key (int, int)
-def b2pu (n):
-  return int.from_bytes (n[:32], 'big'), int.from_bytes (n[32:], 'big')
+#from base64 to int
+def a2i (n):
+  return b2i(b64decode(n))
 
-#generate a key pair private key (int) and public key (int, int)
-def generate_keypair():
-  PR, PU = keys.gen_keypair(curve.P256)
-  PU = (PU.x, PU.y)
-  return PR, PU
+#from int tuple (int, int) to bytes (output len: 64 bytes)
+def u2b (n):
+  return i2b(n[0]) + i2b(n[1])
 
-#double sha256 hash of data m
-def double_sha256(m):
-  d = sha256(m)
-  d = sha256(d.digest())
-  return d.digest()
+#from bytes to int tuple (input len: 64 bytes)
+def b2u (n):
+  return b2i(n[:32]), b2i(n[32:])
 
-#T is the list of digest of all transaction in the block
-#n is the len of T
-#return the merkel root (size 32) of transaction list T
-def merkel_root_generation(T, n):
-  if n == 0:
-    return None
-  elif n == 1:
-    return T[0]
-  else:
-    if n%2 != 0:
-      T.append(b'')
-    T = [double_sha256(i+j) for i, j in zip(T[::2], T[1::2])]
-    n = int(n/2)+n%2
-    return merkel_root_generation (T, n)
+#from int tuple to base64
+def u2a (n):
+  return b64encode(u2b(n))
+
+#from base64 to int tuple
+def a2u (n):
+  return b2u(b64decode(n))
